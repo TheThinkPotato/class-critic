@@ -45,7 +45,6 @@ async function getData(collectionName) {
   await client.connect();
   const db = client.db(DBname);
   const collection = db.collection(collectionName);
-  // const result = await collection.findOne(query);
   const result = await collection
     .find({})
     .toArray()

@@ -4,9 +4,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const secretKey = process.env.APIKEY;
 
-const MongoClient = require("mongodb").MongoClient;
-const mongoSrv = "mongodb://localhost:27017";
-const DBname = "class_critic";
 const collectionName = "user";
 const saltRounds = 10;
 
@@ -103,14 +100,16 @@ router.put("/:email/profile", async (req, res, next) => {
   password = req.body.password;
 
   if (authCheck.checkValidToken(req.headers.authorization)) {
-    if (true) {
+    if (inputCheckUpdate(req.body)) {
       const hash = encryptPassword(password);
       dbTools.updateData(
         { email: email },
         { fName: fName, lName: lName, password: hash },
         collectionName
       );
-      res.status(200).json({ message: `User ${fName} ${lName} updated` });
+      res.status(200).json({ message: `User ${fName} ${lName} updated.` });
+    } else {
+      res.status(400).json({ message: "Missing field or invalid field." });
     }
   } else {
     res.status(401).json({
@@ -118,41 +117,15 @@ router.put("/:email/profile", async (req, res, next) => {
       message: "Authorization Error.",
     });
   }
-  //     const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
-  //     const hash = encryptPassword(password);
-
-  //     // update the user's data
-  //     await client.connect();
-  //     var dbo = client.db(DBname);
-  //     var query = { email: email };
-  //     var newValues = {
-  //       $set: { fName: fName, lName: lName, password: hash },
-  //     };
-
-  //     // const result = await collection
-  //     //   .updateOne(query, newValues)
-  //     //   .then((result) => {
-  //     //     console.log(">>>>",result);
-  //     //     client.close();
-  //     //     res.status(200).json({ message: `User ${result} updated.` });
-  //     // });
-
-  //     await dbo
-  //       .collection(collectionName)
-  //       .updateOne(query, newValues, function (err, res) {
-  //         if (err) throw err;
-  //         console.log("1 document updated");
-  //         client.close();
-  //       });
-  //       res.status(200).json({ message: `User ${fName} ${lName} updated.` });
-  //   }
-  // } else {
-  //   res.status(401).json({
-  //     error: true,
-  //     message: "Authorization Error.",
-  //   });
-  // }
 });
+
+
+function inputCheckUpdate(body) {
+  if (!body.email || !body.fName || !body.lName || !body.password) {
+    return false;
+  }else
+  return true;
+}
 
 function inputCheck(body) {
   result = { error: false, message: "ok.", code: 200 };
