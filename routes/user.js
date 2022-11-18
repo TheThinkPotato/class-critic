@@ -12,6 +12,7 @@ const collectionName = "user";
 const authCheck = require("../functions/authCheck");
 const saltRounds = 10;
 
+// Log In Route
 router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -48,19 +49,33 @@ router.post("/login", async (req, res, next) => {
   });
 });
 
-router.post("/register", async (req, res, next) => {
-  const { email, password, fName, lName } = req.body;
-  if (!email || !password || !fName || !lName) {
-    res.status(400).json({
+function inputCheck(body) {
+  result = { error: false, message: "ok.", code: 200 };
+
+  if (!body.email || !body.password || !body.fName || !body.lName) {
+    result = {
       error: true,
-      message: "Bad Request on Register",
-    });
-    return;
+      message: "Request body incomplete, all fields are required",
+      code: 400,
+    };
   }
-  if (!/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
-    res.status(400).json({
+  if (!/^[^@]+@[^@]+\.[^@]+$/.test(body.email)) {
+    result = {
       error: true,
-      message: "Invalid format email address",
+      message: "Invalid email address",
+      code: 400,
+    };
+  }
+  return result;
+}
+
+// Register Route
+router.post("/register", async (req, res, next) => {
+  const { email, password, fName, lName } = req.body;  
+  if (inputCheck(req.body).error) {
+    res.status(result.code).json({
+      error: true,
+      message: result.message,
     });
     return;
   }
@@ -75,6 +90,7 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
+// Get User Data Route
 router.get("/:email/profile", async (req, res, next) => {
   data = await getUserData(req.params.email);
   if (data !== null) {
@@ -92,6 +108,43 @@ router.get("/:email/profile", async (req, res, next) => {
   }
 });
 
+// Update Route
+router.put("/:email/profile", async (req, res, next) => {
+  email = req.params.email;
+  fName = req.body.fName;
+  lName = req.body.lName;
+  password = req.body.password;
+
+  if (checkValidToken(req.headers.authorization)) {
+    if (true) {
+      const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
+      const hash = encryptPassword(password);
+
+      // update the user's data
+      await client.connect();
+      const db = client.db(DBname);
+      const collection = db.collection(collectionName);
+      const query = { email: email };
+      const newValues = {
+        $set: { fName: fName, lName: lName, password: hash },
+      };
+      const result = await collection
+        .updateOne(query, newValues)
+        .then((result) => {
+          res.status(200).json({ message: "User updated" });
+        });
+    }
+  } else {
+    res.status(401).json({
+      error: true,
+      message: "Authorization Error.",
+    });
+  }
+});
+
+
+
+// Get User Data from DB
 async function getUserData(email) {
   const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
   await client.connect();
@@ -118,6 +171,7 @@ async function getUserData(email) {
   // return result;
 }
 
+// Check if user already exists
 async function checkExistingUser(email) {
   const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
   await client.connect();
@@ -125,10 +179,11 @@ async function checkExistingUser(email) {
   const collection = db.collection(collectionName);
   const query = { email: email };
   const result = await collection.findOne(query);
-  return (result !== null) ? true : false;
+  return result !== null ? true : false;
 }
 
-function checkValidToken(auth) {  
+// Check if token is valid
+function checkValidToken(auth) {
   if (auth) {
     const token = auth.split(" ")[1];
     try {
@@ -141,6 +196,7 @@ function checkValidToken(auth) {
   }
 }
 
+//create new entry in DB.
 function createDataBaseEntry(newEntry) {
   MongoClient.connect(mongoSrv, function (err, db) {
     if (err) throw err;
@@ -155,6 +211,7 @@ function createDataBaseEntry(newEntry) {
   });
 }
 
+// Encrypt Password
 function encryptPassword(password) {
   password = bcrypt.hashSync(password, saltRounds);
   return password;

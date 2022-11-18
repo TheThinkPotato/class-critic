@@ -4,8 +4,8 @@ const router = express.Router();
 router.get("/", function (req, res, next) {
     res.status(200).json(
         {
-            "name": "Class Critic",
-            "version": "Alpha 0.1",
+            "name": process.env.APP_NAME,
+            "version": process.env.VERSION,
         }
     )
 })
