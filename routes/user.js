@@ -13,8 +13,6 @@ const saltRounds = 10;
 const authCheck = require("../functions/authCheck");
 const dbTools = require("../functions/dbTools");
 
-
-
 // Log In Route
 router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
@@ -25,7 +23,7 @@ router.post("/login", async (req, res, next) => {
     });
   }
 
-  data = await dbTools.getFirstData({email:email},collectionName);
+  data = await dbTools.getFirstData({ email: email }, collectionName);
   hash = data.password;
   if (!hash) {
     res.status(401).json({
@@ -54,7 +52,7 @@ router.post("/login", async (req, res, next) => {
 
 // Register Route
 router.post("/register", async (req, res, next) => {
-  const { email, password, fName, lName } = req.body;  
+  const { email, password, fName, lName } = req.body;
   if (inputCheck(req.body).error) {
     res.status(result.code).json({
       error: true,
@@ -63,22 +61,28 @@ router.post("/register", async (req, res, next) => {
     return;
   }
 
-  if (await dbTools.checkDBEntry({email : email,}, collectionName)) {
+  if (await dbTools.checkDBEntry({ email: email }, collectionName)) {
     res.status(400).json({ message: "User already exists" });
     return;
   } else {
     hash_password = encryptPassword(password);
-    dbTools.createDataBaseEntry({ email, password: hash_password, fName, lName },collectionName);
+    dbTools.createDataBaseEntry(
+      { email, password: hash_password, fName, lName },
+      collectionName
+    );
     res.status(200).json({ message: "User created" });
   }
 });
 
 // Get User Data Route
 router.get("/:email/profile", async (req, res, next) => {
-  data = await dbTools.getFirstData({email : req.params.email}, collectionName);
+  data = await dbTools.getFirstData(
+    { email: req.params.email },
+    collectionName
+  );
   if (data !== null) {
     delete data.password;
-    if (checkValidToken(req.headers.authorization)) {
+    if (authCheck.checkValidToken(req.headers.authorization)) {
       res.status(200).json({ ...data });
     } else {
       res.status(401).json({
@@ -93,29 +97,20 @@ router.get("/:email/profile", async (req, res, next) => {
 
 // Update Route
 router.put("/:email/profile", async (req, res, next) => {
-  email = req.params.email;
+  email = req.body.email;
   fName = req.body.fName;
   lName = req.body.lName;
   password = req.body.password;
 
-  if (checkValidToken(req.headers.authorization)) {
+  if (authCheck.checkValidToken(req.headers.authorization)) {
     if (true) {
-      const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
       const hash = encryptPassword(password);
-
-      // update the user's data
-      await client.connect();
-      const db = client.db(DBname);
-      const collection = db.collection(collectionName);
-      const query = { email: email };
-      const newValues = {
-        $set: { fName: fName, lName: lName, password: hash },
-      };
-      const result = await collection
-        .updateOne(query, newValues)
-        .then((result) => {
-          res.status(200).json({ message: "User updated" });
-        });
+      dbTools.updateData(
+        { email: email },
+        { fName: fName, lName: lName, password: hash },
+        collectionName
+      );
+      res.status(200).json({ message: `User ${fName} ${lName} updated` });
     }
   } else {
     res.status(401).json({
@@ -123,6 +118,40 @@ router.put("/:email/profile", async (req, res, next) => {
       message: "Authorization Error.",
     });
   }
+  //     const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
+  //     const hash = encryptPassword(password);
+
+  //     // update the user's data
+  //     await client.connect();
+  //     var dbo = client.db(DBname);
+  //     var query = { email: email };
+  //     var newValues = {
+  //       $set: { fName: fName, lName: lName, password: hash },
+  //     };
+
+  //     // const result = await collection
+  //     //   .updateOne(query, newValues)
+  //     //   .then((result) => {
+  //     //     console.log(">>>>",result);
+  //     //     client.close();
+  //     //     res.status(200).json({ message: `User ${result} updated.` });
+  //     // });
+
+  //     await dbo
+  //       .collection(collectionName)
+  //       .updateOne(query, newValues, function (err, res) {
+  //         if (err) throw err;
+  //         console.log("1 document updated");
+  //         client.close();
+  //       });
+  //       res.status(200).json({ message: `User ${fName} ${lName} updated.` });
+  //   }
+  // } else {
+  //   res.status(401).json({
+  //     error: true,
+  //     message: "Authorization Error.",
+  //   });
+  // }
 });
 
 function inputCheck(body) {
@@ -143,20 +172,6 @@ function inputCheck(body) {
     };
   }
   return result;
-}
-
-// Check if token is valid
-function checkValidToken(auth) {
-  if (auth) {
-    const token = auth.split(" ")[1];
-    try {
-      const payload = jwt.verify(token, secretKey);
-      userEmail = payload["email"];
-    } catch (ex) {
-      console.log(ex.message);
-    }
-    return authCheck.check(auth).error ? false : true;
-  }
 }
 
 // Encrypt Password

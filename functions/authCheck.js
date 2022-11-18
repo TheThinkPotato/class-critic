@@ -28,4 +28,19 @@ function check(auth) {
   return response;
 }
 
-module.exports = {check};
+// Check if token is valid
+function checkValidToken(auth) {
+  if (auth) {
+    const token = auth.split(" ")[1];
+    try {
+      const payload = jwt.verify(token, secretKey);
+      userEmail = payload["email"];
+    } catch (ex) {
+      console.log(ex.message);
+    }
+    return check(auth).error ? false : true;
+  }
+}
+
+
+module.exports = {check, checkValidToken};

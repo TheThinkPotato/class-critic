@@ -20,11 +20,12 @@ router.get("/search/", async (req, res, next) => {
 });
 
 // Add a student
-router.post("/add-student", async (req, res, next) => {
+router.post("/add-student", async (req, res, next) => {  
   const { fName, lName, uni } = req.body;
   lookupName = fName + " " + lName + " " + uni;
+  const totalRating = 5;
   if (!(await dbTools.checkDBEntry({ lookupName: lookupName }, collectionName))) {
-    dbTools.createDataBaseEntry({ lookupName, fName,lName, uni }, collectionName);
+    dbTools.createDataBaseEntry({ lookupName, fName,lName, uni, totalRating}, collectionName);
     res.status(200).json({ error: false, message: `added ${lookupName}` });
   } else {
     res

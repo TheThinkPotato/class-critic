@@ -55,8 +55,32 @@ async function getData(collectionName) {
     .catch((err) => {
       console.log(err);
     });
-  client.close();  
+  client.close();
   return result !== null ? result : { message: "No data found." };
 }
 
-module.exports = { createDataBaseEntry, checkDBEntry, getFirstData, getData };
+// Update Data in DB
+async function updateData(query, newValues, collectionName) {  
+  const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
+  await client.connect();
+  const db = client.db(DBname);
+  const collection = db.collection(collectionName);
+  const result = await collection
+    .updateOne(query, { $set: { ...newValues } })
+    .then((result) => {
+      client.close();
+      return result;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  return result !== null ? result : { message: "No data found." };
+}
+
+module.exports = {
+  createDataBaseEntry,
+  checkDBEntry,
+  getFirstData,
+  getData,
+  updateData,
+};
