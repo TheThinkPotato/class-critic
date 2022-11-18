@@ -10,20 +10,12 @@ const options = require("./knexfile.js");
 const res = require("express/lib/response");
 const knex = require("knex")(options);
 const helmet = require('helmet')
-// const swaggerUi = require('swagger-ui-express');
-// const swaggerDoc = require('./docs/swagger.json');
 require('dotenv').config();
 
 const hostname = process.env.HOST_NAME || "127.0.0.1";
 const port = process.env.PORT || 3001;
 
-
-
-
-const meRouter = require("./routes/me");
-// const countriesRouter = require("./routes/countries");
-// const volcanoRouter = require("./routes/volcano");
-// const volcanoesRouter = require("./routes/volcanoes");
+const aboutRouter = require("./routes/about");
 const userRouter = require("./routes/user");
 console.log("Class Critic Server Starting...")
 console.log(`Server is running on ${process.env.HOST_NAME}:${process.env.PORT}`,);
@@ -65,12 +57,7 @@ app.get("/knex", function (req, res, next) {
   res.send("Version Logged successfully");
 });
 
-
-
-// app.use("/countries", countriesRouter);
-app.use("/me", meRouter);
-// app.use("/volcano", volcanoRouter);
-// app.use("/volcanoes", volcanoesRouter);
+app.use("/about", aboutRouter);
 app.use("/user", userRouter);
 
 

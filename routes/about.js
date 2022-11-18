@@ -4,8 +4,8 @@ const router = express.Router();
 router.get("/", function (req, res, next) {
     res.status(200).json(
         {
-            "name": "Daniel Lopez",
-            "student_number": "n10956611"
+            "name": "Class Critic",
+            "version": "Alpha 0.1",
         }
     )
 })

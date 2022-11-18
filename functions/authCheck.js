@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const secretKey = "SUPER SECRET KEY DO NOT STEAL";
+const secretKey = process.env.APIKEY;
 
 // check is current token is valid
 // @param auth takes req.headers.authorization
