@@ -8,9 +8,12 @@ const MongoClient = require("mongodb").MongoClient;
 const mongoSrv = "mongodb://localhost:27017";
 const DBname = "class_critic";
 const collectionName = "user";
+const saltRounds = 10;
 
 const authCheck = require("../functions/authCheck");
-const saltRounds = 10;
+const dbTools = require("../functions/dbTools");
+
+
 
 // Log In Route
 router.post("/login", async (req, res, next) => {
@@ -22,7 +25,7 @@ router.post("/login", async (req, res, next) => {
     });
   }
 
-  data = await getUserData(email);
+  data = await dbTools.getFirstData({email:email},collectionName);
   hash = data.password;
   if (!hash) {
     res.status(401).json({
@@ -49,26 +52,6 @@ router.post("/login", async (req, res, next) => {
   });
 });
 
-function inputCheck(body) {
-  result = { error: false, message: "ok.", code: 200 };
-
-  if (!body.email || !body.password || !body.fName || !body.lName) {
-    result = {
-      error: true,
-      message: "Request body incomplete, all fields are required",
-      code: 400,
-    };
-  }
-  if (!/^[^@]+@[^@]+\.[^@]+$/.test(body.email)) {
-    result = {
-      error: true,
-      message: "Invalid email address",
-      code: 400,
-    };
-  }
-  return result;
-}
-
 // Register Route
 router.post("/register", async (req, res, next) => {
   const { email, password, fName, lName } = req.body;  
@@ -80,19 +63,19 @@ router.post("/register", async (req, res, next) => {
     return;
   }
 
-  if (await checkExistingUser(email)) {
+  if (await dbTools.checkDBEntry({email : email,}, collectionName)) {
     res.status(400).json({ message: "User already exists" });
     return;
   } else {
     hash_password = encryptPassword(password);
-    createDataBaseEntry({ email, password: hash_password, fName, lName });
+    dbTools.createDataBaseEntry({ email, password: hash_password, fName, lName },collectionName);
     res.status(200).json({ message: "User created" });
   }
 });
 
 // Get User Data Route
 router.get("/:email/profile", async (req, res, next) => {
-  data = await getUserData(req.params.email);
+  data = await dbTools.getFirstData({email : req.params.email}, collectionName);
   if (data !== null) {
     delete data.password;
     if (checkValidToken(req.headers.authorization)) {
@@ -142,44 +125,24 @@ router.put("/:email/profile", async (req, res, next) => {
   }
 });
 
+function inputCheck(body) {
+  result = { error: false, message: "ok.", code: 200 };
 
-
-// Get User Data from DB
-async function getUserData(email) {
-  const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
-  await client.connect();
-  const db = client.db(DBname);
-  const collection = db.collection(collectionName);
-  const query = { email: email };
-  const result = await collection.findOne(query);
-  if (result) {
-    return result;
-  } else {
-    return null;
+  if (!body.email || !body.password || !body.fName || !body.lName) {
+    result = {
+      error: true,
+      message: "Request body incomplete, all fields are required",
+      code: 400,
+    };
   }
-
-  // const result = await collection
-  //   .find(query)
-  //   .toArray()
-  //   .then((result) => {
-  //     return result;
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
-  // client.close();
-  // return result;
-}
-
-// Check if user already exists
-async function checkExistingUser(email) {
-  const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
-  await client.connect();
-  const db = client.db(DBname);
-  const collection = db.collection(collectionName);
-  const query = { email: email };
-  const result = await collection.findOne(query);
-  return result !== null ? true : false;
+  if (!/^[^@]+@[^@]+\.[^@]+$/.test(body.email)) {
+    result = {
+      error: true,
+      message: "Invalid email address",
+      code: 400,
+    };
+  }
+  return result;
 }
 
 // Check if token is valid
@@ -194,21 +157,6 @@ function checkValidToken(auth) {
     }
     return authCheck.check(auth).error ? false : true;
   }
-}
-
-//create new entry in DB.
-function createDataBaseEntry(newEntry) {
-  MongoClient.connect(mongoSrv, function (err, db) {
-    if (err) throw err;
-    {
-      const dbo = db.db(DBname);
-      dbo.collection(collectionName).insertOne(newEntry, function (err, res) {
-        if (err) throw err;
-        console.log("1 document inserted");
-        db.close();
-      });
-    }
-  });
 }
 
 // Encrypt Password

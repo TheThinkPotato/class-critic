@@ -12,12 +12,14 @@ data = await dbTools.getData(collectionName);
 res.status(200).json({...data});
 });
 
+// Search for a student
 router.get("/search/", async (req, res, next) => {
   const name = req.query.lookupName;  
   const data = await dbTools.getFirstData({ lookupName: name }, collectionName);  
   res.status(200).json({ ...data });
 });
 
+// Add a student
 router.post("/add-student", async (req, res, next) => {
   const { fName, lName, uni } = req.body;
   lookupName = fName + " " + lName + " " + uni;

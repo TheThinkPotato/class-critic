@@ -12,12 +12,14 @@ data = await dbTools.getData(collectionName);
 res.status(200).json({...data});
 });
 
+// Search for a university
 router.get("/search/", async (req, res, next) => {
   const name = req.query.name;
   const data = await dbTools.getFirstData({ name: name }, collectionName);  
   res.status(200).json({ ...data });
 });
 
+// Add a university
 router.post("/add-uni", async (req, res, next) => {
   const { name, state, website } = req.body;
   if (!(await dbTools.checkDBEntry({ name: name }, collectionName))) {
