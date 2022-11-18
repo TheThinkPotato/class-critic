@@ -12,8 +12,8 @@ data = await dbTools.getData(collectionName);
 res.status(200).json({...data});
 });
 
-router.get("/:name", async (req, res, next) => {
-  const name = req.params.name;
+router.get("/search/", async (req, res, next) => {
+  const name = req.query.name;
   const data = await dbTools.getFirstData({ name: name }, collectionName);  
   res.status(200).json({ ...data });
 });

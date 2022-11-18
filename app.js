@@ -18,6 +18,7 @@ const port = process.env.PORT || 3001;
 const aboutRouter = require("./routes/about");
 const userRouter = require("./routes/user");
 const uniRouter = require("./routes/uni");
+const studentRouter = require("./routes/student");
 
 console.log("Class Critic Server Starting...")
 console.log(`Server is running on ${process.env.HOST_NAME}:${process.env.PORT}`,);
@@ -62,6 +63,7 @@ app.get("/knex", function (req, res, next) {
 app.use("/about", aboutRouter);
 app.use("/user", userRouter);
 app.use("/uni", uniRouter);
+app.use("/student", studentRouter);
 
 
 // app.use("/[.a-zA-Z0-9-]+",function ( req,res,next)
