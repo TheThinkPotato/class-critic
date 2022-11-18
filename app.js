@@ -6,22 +6,20 @@ const logger = require("morgan");
 const cors = require('cors');
 const app = express();
 
-const options = require("./knexfile.js");
 const res = require("express/lib/response");
-const knex = require("knex")(options);
 const helmet = require('helmet')
 require('dotenv').config();
 
 const hostname = process.env.HOST_NAME || "127.0.0.1";
 const port = process.env.PORT || 3001;
 
+console.log("Class Critic Server Starting...")
+console.log(`Server is running on ${process.env.HOST_NAME}:${process.env.PORT}`,);
+
 const aboutRouter = require("./routes/about");
 const userRouter = require("./routes/user");
 const uniRouter = require("./routes/uni");
 const studentRouter = require("./routes/student");
-
-console.log("Class Critic Server Starting...")
-console.log(`Server is running on ${process.env.HOST_NAME}:${process.env.PORT}`,);
 
 app.options('*', cors()) // include before other routes
 
@@ -36,29 +34,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(helmet());
 
-
 logger.token('req', (req, res) => JSON.stringify(req.headers))
 logger.token('res', (req, res) => {
 const headers = {}
 res.getHeaderNames().map(h => headers[h] = res.getHeader(h))
 return JSON.stringify(headers)
 })
-
-app.use((req, res, next) => {
-  req.db = knex;
-  next();
-});
-
-app.get("/knex", function (req, res, next) {
-  req.db
-    .raw("SELECT VERSION()")
-    .then((version) => console.log(version[0][0]))
-    .catch((err) => {
-      console.log(err);
-      throw err;
-    });
-  res.send("Version Logged successfully");
-});
 
 app.use("/about", aboutRouter);
 app.use("/user", userRouter);
@@ -71,8 +52,6 @@ app.use("/", function (req, res, next) {
   res.status(404).json({error: true , message : "Not Found"});
   // next(createError(404, "Not Found"));
 })
-
-
 
 
 // error handler
