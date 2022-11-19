@@ -59,7 +59,7 @@ async function getData(collectionName) {
 }
 
 // Update Data in DB
-async function updateData(query, newValues, collectionName) {  
+async function updateData(query, newValues, collectionName) {
   const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
   await client.connect();
   const db = client.db(DBname);
@@ -76,10 +76,44 @@ async function updateData(query, newValues, collectionName) {
   return result !== null ? result : { message: "No data found." };
 }
 
+// append to an array in DB
+async function appendArray(query, newValues, collectionName) {
+  const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
+  await client.connect();
+  const db = client.db(DBname);
+  const collection = db.collection(collectionName);
+  const result = await collection.updateOne(query, { $push: { ...newValues } });
+  client.close();
+  return result !== null ? result : { message: "No data found." };
+}
+
+// check if array contains value and how many times
+async function checkInArray(query, array, collectionName) {
+  const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
+  await client.connect();
+  const db = client.db(DBname);
+  const collection = db.collection(collectionName);
+  const email = "test@testmail.au";
+  // const result = await collection.aggregate([ { $unwind: "$ratings" }, { $match: { "ratings": { $exists: true } } }, { $group: { _id: null, count: { $sum: 1 } } } ]).toArray();
+  // const result = await collection.aggregate([ { $unwind: "$ratings" }, { $match: { "ratings": { owner: email } } }, { $group: { _id: null, count: { $sum: 1 } } } ]).toArray();  
+  // const result = await collection.aggregate([ { $unwind: "$ratings" }, { $match: { "ratings.owner": email } }, { $group: { _id: null, count: { $sum: 1 } } },{ $project : { _id:0, count : 1 } } ]).toArray();
+  const result = await collection
+    .aggregate([
+      { $unwind: array },
+      { $match: query },
+      { $group: { _id: null, count: { $sum: 1 } } },
+      { $project: { _id: 0, count: 1 } },
+    ])
+    .toArray();
+  client.close();
+  return result.length > 0 ? result[0].count : false;
+}
 module.exports = {
   createDataBaseEntry,
   checkDBEntry,
   getFirstData,
   getData,
   updateData,
+  appendArray,
+  checkInArray,
 };

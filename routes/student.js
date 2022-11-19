@@ -41,4 +41,30 @@ router.post("/add-student", async (req, res, next) => {
   }
 });
 
+router.get("/add-rating", async (req, res, next) => {
+  const {
+    owner,
+    student,
+    communication,
+    attendance,
+    workmanship,
+    focus,
+    organization,
+    niceness,
+  } = req.query;
+
+  if (!(await dbTools.checkDBEntry({ lookupName: student }, collectionName))) {
+    res.status(400).json({ error: true, message: "Student does not exist." });
+  } else {
+    if (await dbTools.checkInArray({ "ratings.owner": owner }, "$ratings", collectionName) > 0) {
+      res
+        .status(400)
+        .json({ error: true, message: "You have already rated this student." });
+    } else {
+      dbTools.appendArray({lookupName: student}, {ratings:{owner,student ,communication, attendance, workmanship, focus, organization, niceness}},collectionName);
+      res.status(200).json({ error: false, message: "added rating" });
+    }
+  }
+});
+
 module.exports = router;
