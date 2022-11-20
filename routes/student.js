@@ -3,6 +3,7 @@ const router = express.Router();
 
 const authCheck = require("../functions/authCheck");
 const dbTools = require("../functions/dbTools");
+const classCritic = require("../functions/class_critic");
 
 const collectionName = "student";
 
@@ -38,6 +39,7 @@ router.post("/add-student", async (req, res, next) => {
   }
 });
 
+// Add a rating to a student
 router.get("/add-rating", async (req, res, next) => {
   if (!authCheck.checkValidToken(req.headers.authorization))
     return res
@@ -91,6 +93,7 @@ router.get("/add-rating", async (req, res, next) => {
   }
 });
 
+//Get rating from a student
 router.get("/get-rating", async (req, res, next) => {
   const { student } = req.query;
   if (!(await dbTools.checkDBEntry({ lookupName: student }, collectionName))) {
@@ -105,58 +108,10 @@ router.get("/get-rating", async (req, res, next) => {
       return;
     }
 
-    const result = calculateScores(data);
+    const result = classCritic.calculateScores(data);
 
     res.status(200).json({ ...result });
   }
 });
-
-function calculateScores(ratings) {
-  let communication = 0;
-  let attendance = 0;
-  let workmanship = 0;
-  let focus = 0;
-  let organization = 0;
-  let niceness = 0;
-  let totalRating = 0;
-  let ratingCount = 0;
-
-  for (let i = 0; i < ratings.length; i++) {
-    communication += parseInt(ratings[i].ratings.communication);
-    attendance += parseInt(ratings[i].ratings.attendance);
-    workmanship += parseInt(ratings[i].ratings.workmanship);
-    focus += parseInt(ratings[i].ratings.focus);
-    organization += parseInt(ratings[i].ratings.organization);
-    niceness += parseInt(ratings[i].ratings.niceness);
-    ratingCount += 1;
-  }
-
-  communication = communication / ratingCount;
-  attendance = attendance / ratingCount;
-  workmanship = workmanship / ratingCount;
-  focus = focus / ratingCount;
-  organization = organization / ratingCount;
-  niceness = niceness / ratingCount;
-
-  totalRating =
-    (communication +
-      attendance +
-      workmanship +
-      focus +
-      organization +
-      niceness) /
-    6;
-
-  return {
-    student: ratings[0].lookupName,
-    communication,
-    attendance,
-    workmanship,
-    focus,
-    organization,
-    niceness,
-    totalRating,
-  };
-}
 
 module.exports = router;
