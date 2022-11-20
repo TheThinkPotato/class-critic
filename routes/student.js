@@ -56,15 +56,98 @@ router.get("/add-rating", async (req, res, next) => {
   if (!(await dbTools.checkDBEntry({ lookupName: student }, collectionName))) {
     res.status(400).json({ error: true, message: "Student does not exist." });
   } else {
-    if (await dbTools.checkInArray({ "ratings.owner": owner }, "$ratings", collectionName) > 0) {
+    if (
+      (await dbTools.checkInArray(
+        { "ratings.owner": owner },
+        "$ratings",
+        collectionName
+      )) > 0
+    ) {
       res
         .status(400)
         .json({ error: true, message: "You have already rated this student." });
     } else {
-      dbTools.appendArray({lookupName: student}, {ratings:{owner,student ,communication, attendance, workmanship, focus, organization, niceness}},collectionName);
+      dbTools.appendArray(
+        { lookupName: student },
+        {
+          ratings: {
+            owner,
+            student,
+            communication,
+            attendance,
+            workmanship,
+            focus,
+            organization,
+            niceness,
+          },
+        },
+        collectionName
+      );
       res.status(200).json({ error: false, message: "added rating" });
     }
   }
 });
+
+router.get("/get-rating", async (req, res, next) => {
+  const { student } = req.query;
+  if (!(await dbTools.checkDBEntry({ lookupName: student }, collectionName))) {
+    res.status(400).json({ error: true, message: "Student does not exist." });
+  } else {
+    const data = await dbTools.getScores(
+      { lookupName: student },
+      collectionName
+    );
+    const result = calculateScores(data);
+    res.status(200).json({ ...result });
+  }
+});
+
+function calculateScores(ratings) {
+  let communication = 0;
+  let attendance = 0;
+  let workmanship = 0;
+  let focus = 0;
+  let organization = 0;
+  let niceness = 0;
+  let totalRating = 0;
+  let ratingCount = 0;
+
+  for (let i = 0; i < ratings.length; i++) {
+    communication += parseInt(ratings[i].ratings.communication);
+    attendance += parseInt(ratings[i].ratings.attendance);
+    workmanship += parseInt(ratings[i].ratings.workmanship);
+    focus += parseInt(ratings[i].ratings.focus);
+    organization += parseInt(ratings[i].ratings.organization);
+    niceness += parseInt(ratings[i].ratings.niceness);
+    ratingCount += 1;
+  }
+
+  communication = communication / ratingCount;
+  attendance = attendance / ratingCount;
+  workmanship = workmanship / ratingCount;
+  focus = focus / ratingCount;
+  organization = organization / ratingCount;
+  niceness = niceness / ratingCount;
+
+  totalRating =
+    (communication +
+      attendance +
+      workmanship +
+      focus +
+      organization +
+      niceness) /
+    6;
+
+  return {
+    student: ratings[0].lookupName,
+    communication,
+    attendance,
+    workmanship,
+    focus,
+    organization,
+    niceness,
+    totalRating,
+  };
+}
 
 module.exports = router;

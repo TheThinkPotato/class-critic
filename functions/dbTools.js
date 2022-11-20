@@ -65,7 +65,7 @@ async function updateData(query, newValues, collectionName) {
   const db = client.db(DBname);
   const collection = db.collection(collectionName);
   const result = await collection
-    .updateOne(query, { $set: { ...newValues } })
+    .updateOne(query, { $set: { newValues } })
     .then((result) => {
       client.close();
       return result;
@@ -82,7 +82,7 @@ async function appendArray(query, newValues, collectionName) {
   await client.connect();
   const db = client.db(DBname);
   const collection = db.collection(collectionName);
-  const result = await collection.updateOne(query, { $push: { ...newValues } });
+  const result = await collection.updateOne(query, { $push: { newValues } });
   client.close();
   return result !== null ? result : { message: "No data found." };
 }
@@ -95,7 +95,7 @@ async function checkInArray(query, array, collectionName) {
   const collection = db.collection(collectionName);
   const email = "test@testmail.au";
   // const result = await collection.aggregate([ { $unwind: "$ratings" }, { $match: { "ratings": { $exists: true } } }, { $group: { _id: null, count: { $sum: 1 } } } ]).toArray();
-  // const result = await collection.aggregate([ { $unwind: "$ratings" }, { $match: { "ratings": { owner: email } } }, { $group: { _id: null, count: { $sum: 1 } } } ]).toArray();  
+  // const result = await collection.aggregate([ { $unwind: "$ratings" }, { $match: { "ratings": { owner: email } } }, { $group: { _id: null, count: { $sum: 1 } } } ]).toArray();
   // const result = await collection.aggregate([ { $unwind: "$ratings" }, { $match: { "ratings.owner": email } }, { $group: { _id: null, count: { $sum: 1 } } },{ $project : { _id:0, count : 1 } } ]).toArray();
   const result = await collection
     .aggregate([
@@ -108,6 +108,76 @@ async function checkInArray(query, array, collectionName) {
   client.close();
   return result.length > 0 ? result[0].count : false;
 }
+
+// .aggregate([
+//   { $match: query },
+//   { $unwind: "$ratings" },
+//   // get avg of communication
+//   { $group: { _id: "$_id", avgCommunication: { $avg: "$ratings.communication" } } },
+//   ])
+// .toArray();
+
+async function getScores(query, collectionName) {
+  const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
+  await client.connect();
+  const db = client.db(DBname);
+  const collection = db.collection(collectionName);
+  const result = await collection
+    .aggregate([{ $match: query }, { $unwind: "$ratings" }])
+    .toArray();
+  client.close();
+  console.log(result);
+  return result;
+}
+
+//     { "$group": {
+//          "_id": { "Information": "$_id", "Name": "$details.Name" },
+//          "id": { "$avg": "$id" },
+//          "AvgValue": { "$avg": "$details.Marks" }
+//       }},
+
+// get average of communication from ratings array
+// .aggregate([
+//       { $match: query },
+
+//       { $unwind: "$ratings" },
+
+//       { $group: {
+//          _id: { "Information": "$_id", "Student": "$details.Student" },
+//           "AvgCommunication": { "$avg": "$ratings.communication" }
+
+//     } },
+
+//       // { $group: { _id: 0, avgCommunication: { $avg: "$ratings.communication" } } },
+//       // { $group: { _id: null, avg: { $avg: "$ratings.communication" } } },
+//       // { $project: { _id: 0, avg: 1 } },
+// .aggregate([
+
+//       { "$group": {
+//          "_id": "$lookupName",
+//          "ratings": { "$push": "$ratings" }
+//       }},
+//       { "$unwind": "$ratings" },
+//       { "$unwind": "$ratings" },
+//       { "$group": {
+//          "_id": { "lookupName": "$lookupName",
+//          "communication": "$ratings.communication",
+//          "attendance": "$ratings.communication",
+//          "workmanship": "$ratings.workmanship",
+//          "focus": "$ratings.focus",
+//          "organization": "$ratings.organization",
+//          "niceness": "$ratings.niceness",
+//         },
+//         //  "id": { "$avg": "$id" },
+//         //  "AvgValue": { "$first": "$ratings.communication" }
+//       }},
+
+//     ]).toArray();
+//     client.close();
+//     // console.log(result);
+//     return result;
+//   }
+
 module.exports = {
   createDataBaseEntry,
   checkDBEntry,
@@ -116,4 +186,5 @@ module.exports = {
   updateData,
   appendArray,
   checkInArray,
+  getScores,
 };
