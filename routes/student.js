@@ -99,8 +99,14 @@ router.get("/get-rating", async (req, res, next) => {
     const data = await dbTools.getScores(
       { lookupName: student },
       collectionName
-    );
+    );    
+    if (data.length === 0) {
+      res.status(400).json({ error: true, message: "No ratings found." });
+      return;
+    }
+
     const result = calculateScores(data);
+
     res.status(200).json({ ...result });
   }
 });
