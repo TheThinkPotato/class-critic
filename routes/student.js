@@ -21,27 +21,29 @@ router.get("/search/", async (req, res, next) => {
 
 // Add a student
 router.post("/add-student", async (req, res, next) => {
-  if (authCheck.checkValidToken(req.headers.authorization)) {
-    const { fName, lName, uni } = req.body;
-    lookupName = fName + " " + lName + " " + uni;
-    const totalRating = 5;
-    if (
-      !(await dbTools.checkDBEntry({ lookupName: lookupName }, collectionName))
-    ) {
-      dbTools.createDataBaseEntry(
-        { lookupName, fName, lName, uni, totalRating },
-        collectionName
-      );
-      res.status(200).json({ error: false, message: `added ${lookupName}` });
-    } else {
-      res.status(400).json({ error: true, message: "Student already exists." });
-    }
-  } else {
+  if (!authCheck.checkValidToken(req.headers.authorization)) {
     res.status(401).json({ error: true, message: "Authorization Error." });
+    return;
+  }
+  const { fName, lName, uni } = req.body;
+  lookupName = fName + " " + lName + " " + uni;
+  if (await dbTools.checkDBEntry({ lookupName: lookupName }, collectionName))
+    res.status(400).json({ error: true, message: "Student already exists." });
+  else {
+    dbTools.createDataBaseEntry(
+      { lookupName, fName, lName, uni },
+      collectionName
+    );
+    res.status(200).json({ error: false, message: `added ${lookupName}` });
   }
 });
 
 router.get("/add-rating", async (req, res, next) => {
+  if (!authCheck.checkValidToken(req.headers.authorization))
+    return res
+      .status(401)
+      .json({ error: true, message: "Authorization Error." });
+
   const {
     owner,
     student,

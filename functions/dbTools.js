@@ -10,7 +10,7 @@ async function createDataBaseEntry(newEntry, collectionName) {
   await client.connect();
   const db = client.db(DBname);
   const collection = db.collection(collectionName);
-  await collection.insertOne(newEntry);    
+  await collection.insertOne(newEntry);
 }
 
 // Check if entry already exists
