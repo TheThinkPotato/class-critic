@@ -82,13 +82,13 @@ async function appendArray(query, newValues, collectionName) {
   await client.connect();
   const db = client.db(DBname);
   const collection = db.collection(collectionName);
-  const result = await collection.updateOne(query, { $push: { newValues } });
+  const result = await collection.updateOne(query, { $push: { ...newValues } });
   client.close();
   return result !== null ? result : { message: "No data found." };
 }
 
 // check if array contains value and how many times
-async function checkInArray(query, array, collectionName) {
+async function checkInArray(query1,query2, array, collectionName) {
   const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
   await client.connect();
   const db = client.db(DBname);
@@ -99,12 +99,14 @@ async function checkInArray(query, array, collectionName) {
   // const result = await collection.aggregate([ { $unwind: "$ratings" }, { $match: { "ratings.owner": email } }, { $group: { _id: null, count: { $sum: 1 } } },{ $project : { _id:0, count : 1 } } ]).toArray();
   const result = await collection
     .aggregate([
+      {$match: query1},
       { $unwind: array },
-      { $match: query },
+      { $match: query2 },
       { $group: { _id: null, count: { $sum: 1 } } },
       { $project: { _id: 0, count: 1 } },
     ])
     .toArray();
+    console.log(result);
   client.close();
   return result.length > 0 ? result[0].count : false;
 }

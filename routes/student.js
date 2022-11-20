@@ -58,6 +58,7 @@ router.get("/add-rating", async (req, res, next) => {
   } else {
     if (
       (await dbTools.checkInArray(
+        { lookupName: student },
         { "ratings.owner": owner },
         "$ratings",
         collectionName
