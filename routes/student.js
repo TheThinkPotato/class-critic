@@ -57,6 +57,43 @@ router.get("/add-rating", async (req, res, next) => {
     niceness,
   } = req.query;
 
+  if (
+    communication < 0 ||
+    communication > 5 ||
+    communication === undefined ||
+    communication === null ||
+    isNaN(communication) ||
+    attendance < 0 ||
+    attendance > 5 ||
+    attendance === undefined ||
+    attendance === null ||
+    isNaN(attendance) ||
+    workmanship < 0 ||
+    workmanship > 5 ||
+    workmanship === undefined ||
+    workmanship === null ||
+    isNaN(workmanship) ||
+    focus < 0 ||
+    focus > 5 ||
+    focus === undefined ||
+    focus === null ||
+    isNaN(focus) ||
+    organization < 0 ||
+    organization > 5 ||
+    organization === undefined ||
+    organization === null ||
+    isNaN(organization) ||
+    niceness < 0 ||
+    niceness > 5 ||
+    niceness === undefined ||
+    niceness === null ||
+    isNaN(niceness)
+  ) {
+    return res
+      .status(400)
+      .json({ error: true, message: "Difficulty must be between 1 and 5." });
+  }
+
   if (!(await dbTools.checkDBEntry({ lookupName: student }, collectionName))) {
     res.status(400).json({ error: true, message: "Student does not exist." });
   } else {

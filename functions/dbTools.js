@@ -95,12 +95,12 @@ async function checkInArray(query1, query2, array, collectionName) {
       { $group: { _id: null, count: { $sum: 1 } } },
       { $project: { _id: 0, count: 1 } },
     ])
-    .toArray();
-  console.log(result);
+    .toArray();  
   client.close();
   return result.length > 0 ? result[0].count : false;
 }
 
+// gets rating scores from DB
 async function getScores(query, collectionName) {
   const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
   await client.connect();
@@ -109,8 +109,7 @@ async function getScores(query, collectionName) {
   const result = await collection
     .aggregate([{ $match: query }, { $unwind: "$ratings" }])
     .toArray();
-  client.close();
-  console.log(result);
+  client.close();  
   return result;
 }
 

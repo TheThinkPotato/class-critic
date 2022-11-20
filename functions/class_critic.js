@@ -1,3 +1,5 @@
+const ratingItemsCount = 6;
+
 function calculateScores(ratings) {
   let communication = 0;
   let attendance = 0;
@@ -32,7 +34,7 @@ function calculateScores(ratings) {
       focus +
       organization +
       niceness) /
-    6;
+    ratingItemsCount;
 
   return {
     student: ratings[0].lookupName,
