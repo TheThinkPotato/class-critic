@@ -21,6 +21,7 @@ router.post("/login", async (req, res, next) => {
   }
 
   data = await dbTools.getFirstData({ email: email }, collectionName);
+    
   hash = data.password;
   if (!hash) {
     res.status(401).json({
@@ -44,6 +45,7 @@ router.post("/login", async (req, res, next) => {
     token,
     token_type: "Bearer",
     expires_in,
+    login: "success",
   });
 });
 

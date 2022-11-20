@@ -5,18 +5,12 @@ const mongoSrv = "mongodb://localhost:27017";
 const DBname = "class_critic";
 
 //create new entry in DB.
-function createDataBaseEntry(newEntry, collection) {
-  MongoClient.connect(mongoSrv, function (err, db) {
-    if (err) throw err;
-    {
-      const dbo = db.db(DBname);
-      dbo.collection(collection).insertOne(newEntry, function (err, res) {
-        if (err) throw err;
-        console.log("1 document inserted");
-        db.close();
-      });
-    }
-  });
+async function createDataBaseEntry(newEntry, collectionName) {
+  const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
+  await client.connect();
+  const db = client.db(DBname);
+  const collection = db.collection(collectionName);
+  await collection.insertOne(newEntry);    
 }
 
 // Check if entry already exists
@@ -65,7 +59,7 @@ async function updateData(query, newValues, collectionName) {
   const db = client.db(DBname);
   const collection = db.collection(collectionName);
   const result = await collection
-    .updateOne(query, { $set: { newValues } })
+    .updateOne(query, { $set: { ...newValues } })
     .then((result) => {
       client.close();
       return result;
@@ -88,21 +82,21 @@ async function appendArray(query, newValues, collectionName) {
 }
 
 // check if array contains value and how many times
-async function checkInArray(query1,query2, array, collectionName) {
+async function checkInArray(query1, query2, array, collectionName) {
   const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
   await client.connect();
   const db = client.db(DBname);
-  const collection = db.collection(collectionName);  
+  const collection = db.collection(collectionName);
   const result = await collection
     .aggregate([
-      {$match: query1},
+      { $match: query1 },
       { $unwind: array },
       { $match: query2 },
       { $group: { _id: null, count: { $sum: 1 } } },
       { $project: { _id: 0, count: 1 } },
     ])
     .toArray();
-    console.log(result);
+  console.log(result);
   client.close();
   return result.length > 0 ? result[0].count : false;
 }
