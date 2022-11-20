@@ -88,6 +88,16 @@ router.get("/add-rating", async (req, res, next) => {
         },
         collectionName
       );
+
+      // Update the student's overall ratings
+      const ratings = await getDbRating(student);
+      delete ratings.student;
+
+      dbTools.updateData(
+        { lookupName: student },
+        { overallRatings: { ...ratings } },
+        collectionName
+      );
       res.status(200).json({ error: false, message: "added rating" });
     }
   }
@@ -102,16 +112,24 @@ router.get("/get-rating", async (req, res, next) => {
     const data = await dbTools.getScores(
       { lookupName: student },
       collectionName
-    );    
+    );
     if (data.length === 0) {
       res.status(400).json({ error: true, message: "No ratings found." });
       return;
     }
 
     const result = classCritic.calculateScores(data);
-
     res.status(200).json({ ...result });
   }
 });
+
+// Get all ratings from a student
+async function getDbRating(student) {
+  const data = await dbTools.getScores({ lookupName: student }, collectionName);
+  if (data.length !== 0) {
+    const result = classCritic.calculateScores(data);
+    return result;
+  }
+}
 
 module.exports = router;
