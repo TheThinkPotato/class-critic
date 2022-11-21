@@ -13,7 +13,7 @@ require('dotenv').config();
 const hostname = process.env.HOST_NAME || "127.0.0.1";
 const port = process.env.PORT || 3001;
 
-console.log("Class Critic Server Starting...")
+console.log(`Class Critic Server Version ${process.env.VERSION} Starting...`)
 console.log(`Server is running on ${process.env.HOST_NAME}:${process.env.PORT}`,);
 
 const aboutRouter = require("./routes/about");
