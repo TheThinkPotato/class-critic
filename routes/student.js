@@ -9,14 +9,22 @@ const collectionName = "student";
 
 // Get all students
 router.get("/", async (req, res, next) => {
-  data = await dbTools.getData(collectionName);
+  data = await dbTools.getData(null,collectionName);
   res.status(200).json({ ...data });
 });
 
-// Search for a student
-router.get("/search/", async (req, res, next) => {
+// Get a student
+router.get("/get-student/", async (req, res, next) => {
   const name = req.query.lookupName;
   const data = await dbTools.getFirstData({ lookupName: name }, collectionName);
+  res.status(200).json({ ...data });
+});
+
+
+// Search for students
+router.get("/search/", async (req, res, next) => {
+  const regexString = new RegExp(req.query.search, "i"); 
+  const data = await dbTools.getData({ lookupName: {$regex: regexString} }, collectionName);
   res.status(200).json({ ...data });
 });
 

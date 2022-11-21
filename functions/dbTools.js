@@ -34,13 +34,13 @@ async function getFirstData(query, collectionName) {
 }
 
 // Get All Data from DB
-async function getData(collectionName) {
+async function getData(query,collectionName) {  
   const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
   await client.connect();
   const db = client.db(DBname);
   const collection = db.collection(collectionName);
   const result = await collection
-    .find({})
+    .find(query)
     .toArray()
     .then((result) => {
       return result;
