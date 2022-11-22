@@ -41,7 +41,7 @@ async function getData(query,collectionName) {
   const collection = db.collection(collectionName);
   const result = await collection
     .find(query)
-    .toArray()
+    .toArray()    
     .then((result) => {
       return result;
     })
@@ -49,7 +49,7 @@ async function getData(query,collectionName) {
       console.log(err);
     });
   client.close();
-  return result !== null ? result : { message: "No data found." };
+  return result !== null ? {data : result} : { message: "No data found." };
 }
 
 // Update Data in DB
