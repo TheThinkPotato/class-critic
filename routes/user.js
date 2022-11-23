@@ -18,6 +18,7 @@ router.post("/login", async (req, res, next) => {
       error: true,
       message: "Request body incomplete, both email and password are required",
     });
+    return;
   }
 
   data = await dbTools.getFirstData({ email: email }, collectionName);
@@ -28,6 +29,7 @@ router.post("/login", async (req, res, next) => {
       error: true,
       message: "Incorrect email or password",
     });
+    return;
   }
 
   if (!bcrypt.compareSync(password, hash)) {
@@ -35,6 +37,7 @@ router.post("/login", async (req, res, next) => {
       error: true,
       message: "Incorrect email or password",
     });
+    return;
   }
   const expires_in = 60 * 60 * 24;
 
@@ -46,6 +49,8 @@ router.post("/login", async (req, res, next) => {
     token_type: "Bearer",
     expires_in,
     login: "success",
+    fName: data.fName,
+    lName: data.lName
   });
 });
 
