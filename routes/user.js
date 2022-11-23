@@ -50,7 +50,8 @@ router.post("/login", async (req, res, next) => {
     expires_in,
     login: "success",
     fName: data.fName,
-    lName: data.lName
+    lName: data.lName,
+    email: data.email
   });
 });
 
