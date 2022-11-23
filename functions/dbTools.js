@@ -33,6 +33,7 @@ async function getFirstData(query, collectionName) {
   return result !== null ? result : { message: "No data found." };
 }
 
+
 // Get All Data from DB
 async function getData(query,collectionName) {  
   const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
@@ -41,6 +42,7 @@ async function getData(query,collectionName) {
   const collection = db.collection(collectionName);
   const result = await collection
     .find(query)
+    .sort({ "overallRatings.totalRating": -1 })
     .toArray()    
     .then((result) => {
       return result;
