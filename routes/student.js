@@ -51,11 +51,12 @@ router.post("/add-student", async (req, res, next) => {
 
 function ratingsCheckOK(
   communication,
-  attendance,
-  workmanship,
-  focus,
-  organization,
-  niceness
+  participation
+,
+  qualityOfWork,
+  teamWork,
+  punctual,
+  attitude
 ) {
   if (
     communication < 0 ||
@@ -63,31 +64,35 @@ function ratingsCheckOK(
     communication === undefined ||
     communication === null ||
     isNaN(communication) ||
-    attendance < 0 ||
-    attendance > 5 ||
-    attendance === undefined ||
-    attendance === null ||
-    isNaN(attendance) ||
-    workmanship < 0 ||
-    workmanship > 5 ||
-    workmanship === undefined ||
-    workmanship === null ||
-    isNaN(workmanship) ||
-    focus < 0 ||
-    focus > 5 ||
-    focus === undefined ||
-    focus === null ||
-    isNaN(focus) ||
-    organization < 0 ||
-    organization > 5 ||
-    organization === undefined ||
-    organization === null ||
-    isNaN(organization) ||
-    niceness < 0 ||
-    niceness > 5 ||
-    niceness === undefined ||
-    niceness === null ||
-    isNaN(niceness)
+    participation < 0 ||
+    participation
+ > 5 ||
+    participation
+ === undefined ||
+    participation
+ === null ||
+    isNaN(participation
+) ||
+    qualityOfWork < 0 ||
+    qualityOfWork > 5 ||
+    qualityOfWork === undefined ||
+    qualityOfWork === null ||
+    isNaN(qualityOfWork) ||
+    teamWork < 0 ||
+    teamWork > 5 ||
+    teamWork === undefined ||
+    teamWork === null ||
+    isNaN(teamWork) ||
+    punctual < 0 ||
+    punctual > 5 ||
+    punctual === undefined ||
+    punctual === null ||
+    isNaN(punctual) ||
+    attitude < 0 ||
+    attitude > 5 ||
+    attitude === undefined ||
+    attitude === null ||
+    isNaN(attitude)
   ) {
     return false;
   }
@@ -105,11 +110,12 @@ router.get("/add-rating", async (req, res, next) => {
     owner,
     student,
     communication,
-    attendance,
-    workmanship,
-    focus,
-    organization,
-    niceness,
+    participation
+,
+    qualityOfWork,
+    teamWork,
+    punctual,
+    attitude,
   } = req.query;
 
   if(owner === undefined || owner === null || owner === "" || owner === "undefined" || owner === "null"){    
@@ -119,11 +125,12 @@ router.get("/add-rating", async (req, res, next) => {
   if (
     !ratingsCheckOK(      
       communication,
-      attendance,
-      workmanship,
-      focus,
-      organization,
-      niceness
+      participation
+,
+      qualityOfWork,
+      teamWork,
+      punctual,
+      attitude
     )
   ) {
     return res
@@ -153,11 +160,12 @@ router.get("/add-rating", async (req, res, next) => {
             owner,
             student,
             communication,
-            attendance,
-            workmanship,
-            focus,
-            organization,
-            niceness,
+            participation
+,
+            qualityOfWork,
+            teamWork,
+            punctual,
+            attitude,
           },
         },
         collectionName
@@ -219,22 +227,24 @@ router.get("/update-rating", async (req, res, next) => {
     owner,
     student,
     communication,
-    attendance,
-    workmanship,
-    focus,
-    organization,
-    niceness,
+    participation
+,
+    qualityOfWork,
+    teamWork,
+    punctual,
+    attitude,
     index,
   } = req.query;
 
   if (
     !ratingsCheckOK(
       communication,
-      attendance,
-      workmanship,
-      focus,
-      organization,
-      niceness
+      participation
+,
+      qualityOfWork,
+      teamWork,
+      punctual,
+      attitude
     )
   ) {
     return res
@@ -263,11 +273,12 @@ router.get("/update-rating", async (req, res, next) => {
             owner,
             student,
             communication,
-            attendance,
-            workmanship,
-            focus,
-            organization,
-            niceness,
+            participation
+,
+            qualityOfWork,
+            teamWork,
+            punctual,
+            attitude,
           }
         ,        
         collectionName
