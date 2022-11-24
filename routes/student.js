@@ -36,13 +36,13 @@ router.post("/add-student", async (req, res, next) => {
     res.status(401).json({ error: true, message: "Authorization Error." });
     return;
   }
-  const { fName, lName, uni } = req.body;
+  const { fName, lName, gender, uni, major } = req.body;
   lookupName = fName + " " + lName + " " + uni;
   if (await dbTools.checkDBEntry({ lookupName: lookupName }, collectionName))
     res.status(400).json({ error: true, message: "Student already exists." });
   else {
     dbTools.createDataBaseEntry(
-      { lookupName, fName, lName, uni },
+      { lookupName, fName, lName, gender, uni, major },
       collectionName
     );
     res.status(200).json({ error: false, message: `added ${lookupName}` });
@@ -112,8 +112,12 @@ router.get("/add-rating", async (req, res, next) => {
     niceness,
   } = req.query;
 
+  if(owner === undefined || owner === null || owner === "" || owner === "undefined" || owner === "null"){    
+    return res.status(400).json({ error: true, message: "Please login." });
+  }
+
   if (
-    !ratingsCheckOK(
+    !ratingsCheckOK(      
       communication,
       attendance,
       workmanship,
@@ -124,7 +128,7 @@ router.get("/add-rating", async (req, res, next) => {
   ) {
     return res
       .status(400)
-      .json({ error: true, message: "Difficulty must be between 1 and 5." });
+      .json({ error: true, message: "Category's must be between 1 - 5." });
   }
 
   if (!(await dbTools.checkDBEntry({ lookupName: student }, collectionName))) {

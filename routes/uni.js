@@ -19,6 +19,12 @@ router.get("/search/", async (req, res, next) => {
   res.status(200).json({ ...data });
 });
 
+// Search for a university
+router.get("/get-all/", async (req, res, next) => {  
+  const data = await dbTools.getData({}, collectionName);
+  res.status(200).json({ ...data });
+});
+
 // Add a university
 router.post("/add-uni", async (req, res, next) => {
   const { name, state, website } = req.body;
