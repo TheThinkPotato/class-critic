@@ -9,7 +9,7 @@ const collectionName = "student";
 
 // Get all students
 router.get("/", async (req, res, next) => {
-  data = await dbTools.getData(null,collectionName);
+  data = await dbTools.getData(null, collectionName);
   res.status(200).json({ ...data });
 });
 
@@ -20,11 +20,13 @@ router.get("/get-student/", async (req, res, next) => {
   res.status(200).json({ ...data });
 });
 
-
 // Search for students
 router.get("/search/", async (req, res, next) => {
-  const regexString = new RegExp(req.query.search, "i"); 
-  const data = await dbTools.getData({ lookupName: {$regex: regexString} }, collectionName);
+  const regexString = new RegExp(req.query.search, "i");
+  const data = await dbTools.getData(
+    { lookupName: { $regex: regexString } },
+    collectionName
+  );
   res.status(200).json({ ...data });
 });
 
@@ -47,24 +49,14 @@ router.post("/add-student", async (req, res, next) => {
   }
 });
 
-// Add a rating to a student
-router.get("/add-rating", async (req, res, next) => {
-  if (!authCheck.checkValidToken(req.headers.authorization))
-    return res
-      .status(401)
-      .json({ error: true, message: "Authorization Error." });
-
-  const {
-    owner,
-    student,
-    communication,
-    attendance,
-    workmanship,
-    focus,
-    organization,
-    niceness,
-  } = req.query;
-
+function ratingsCheckOK(
+  communication,
+  attendance,
+  workmanship,
+  focus,
+  organization,
+  niceness
+) {
   if (
     communication < 0 ||
     communication > 5 ||
@@ -96,6 +88,39 @@ router.get("/add-rating", async (req, res, next) => {
     niceness === undefined ||
     niceness === null ||
     isNaN(niceness)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+// Add a rating to a student
+router.get("/add-rating", async (req, res, next) => {
+  if (!authCheck.checkValidToken(req.headers.authorization))
+    return res
+      .status(401)
+      .json({ error: true, message: "Authorization Error." });
+
+  const {
+    owner,
+    student,
+    communication,
+    attendance,
+    workmanship,
+    focus,
+    organization,
+    niceness,
+  } = req.query;
+
+  if (
+    !ratingsCheckOK(
+      communication,
+      attendance,
+      workmanship,
+      focus,
+      organization,
+      niceness
+    )
   ) {
     return res
       .status(400)
@@ -176,5 +201,86 @@ async function getDbRating(student) {
     return result;
   }
 }
+
+//update a rating from a student
+
+// Add a rating to a student
+router.get("/update-rating", async (req, res, next) => {
+  if (!authCheck.checkValidToken(req.headers.authorization))
+    return res
+      .status(401)
+      .json({ error: true, message: "Authorization Error." });
+
+  const {
+    owner,
+    student,
+    communication,
+    attendance,
+    workmanship,
+    focus,
+    organization,
+    niceness,
+    index,
+  } = req.query;
+
+  if (
+    !ratingsCheckOK(
+      communication,
+      attendance,
+      workmanship,
+      focus,
+      organization,
+      niceness
+    )
+  ) {
+    return res
+      .status(400)
+      .json({ error: true, message: "Difficulty must be between 1 and 5." });
+  }
+
+  if (!(await dbTools.checkDBEntry({ lookupName: student }, collectionName))) {
+    res.status(400).json({ error: true, message: "Student does not exist." });
+  } else {
+    if (
+      (await dbTools.checkInArray(
+        { lookupName: student },
+        { "ratings.owner": owner },
+        "$ratings",
+        collectionName
+      )) === 0
+    ) {
+      res
+        .status(400)
+        .json({ error: true, message: "You have no rating to update." });
+    } else {
+      dbTools.updateArray(
+        { lookupName: student },
+        {          
+            owner,
+            student,
+            communication,
+            attendance,
+            workmanship,
+            focus,
+            organization,
+            niceness,
+          }
+        ,        
+        collectionName
+      );
+
+      // Update the student's overall ratings
+      const ratings = await getDbRating(student);
+      delete ratings.student;
+
+      dbTools.updateData(
+        { lookupName: student },
+        { overallRatings: { ...ratings } },
+        collectionName
+      );
+      res.status(200).json({ error: false, message: "updated rating" });
+    }
+  }
+});
 
 module.exports = router;

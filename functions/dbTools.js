@@ -72,6 +72,7 @@ async function updateData(query, newValues, collectionName) {
   return result !== null ? result : { message: "No data found." };
 }
 
+
 // append to an array in DB
 async function appendArray(query, newValues, collectionName) {
   const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
@@ -82,6 +83,29 @@ async function appendArray(query, newValues, collectionName) {
   client.close();
   return result !== null ? result : { message: "No data found." };
 }
+
+//update rating array scores object in DB
+async function updateArray(query, newValues, collectionName) {
+  const client = new MongoClient(mongoSrv, { useUnifiedTopology: true });
+  await client.connect();
+  const db = client.db(DBname);
+  const collection = db.collection(collectionName);
+  const result = await collection.updateMany
+  (query, {
+    $set: {
+      "ratings.$[].communication": newValues.communication,
+      "ratings.$[].attendance": newValues.attendance,
+      "ratings.$[].workmanship": newValues.workmanship,
+      "ratings.$[].focus": newValues.focus,
+      "ratings.$[].organization": newValues.organization,
+      "ratings.$[].niceness": newValues.niceness,      
+    }
+  });
+  client.close();
+  return result !== null ? result : { message: "No data found." };
+}
+
+
 
 // check if array contains value and how many times
 async function checkInArray(query1, query2, array, collectionName) {
@@ -124,4 +148,6 @@ module.exports = {
   appendArray,
   checkInArray,
   getScores,
+  updateArray
+
 };
