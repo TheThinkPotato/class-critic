@@ -94,11 +94,11 @@ async function updateArray(query, newValues, collectionName) {
   (query, {
     $set: {
       "ratings.$[].communication": newValues.communication,
-      "ratings.$[].attendance": newValues.attendance,
-      "ratings.$[].workmanship": newValues.workmanship,
-      "ratings.$[].focus": newValues.focus,
-      "ratings.$[].organization": newValues.organization,
-      "ratings.$[].niceness": newValues.niceness,      
+      "ratings.$[].participation": newValues.participation,
+      "ratings.$[].qualityOfWork": newValues.qualityOfWork,
+      "ratings.$[].teamWork": newValues.teamWork,
+      "ratings.$[].punctual": newValues.punctual,
+      "ratings.$[].attitude": newValues.attitude,      
     }
   });
   client.close();
