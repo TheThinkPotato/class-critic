@@ -1,8 +1,16 @@
 const res = require("express/lib/response");
 
 const MongoClient = require("mongodb").MongoClient;
-const mongoSrv = "mongodb://localhost:27017";
+// const mongoSrv = "mongodb://localhost:27017";
+const mongoSrv = process.env.MONGO_SRV;
 const DBname = "class_critic";
+
+// const mongoHeader = {
+//   "Content-Type": "application/json",
+//   "Access-Control-Request-Headers": "*",
+//   "api-key": process.env.API_KEY_MONGO,
+// }
+
 
 //create new entry in DB.
 async function createDataBaseEntry(newEntry, collectionName) {
