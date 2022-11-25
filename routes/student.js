@@ -22,12 +22,16 @@ router.get("/get-student/", async (req, res, next) => {
 
 // Search for students
 router.get("/search/", async (req, res, next) => {
-  const regexString = new RegExp(req.query.search, "i");
-  const data = await dbTools.getData(
-    { lookupName: { $regex: regexString } },
-    collectionName
-  );
-  res.status(200).json({ ...data });
+  try {
+    const regexString = new RegExp(req.query.search, "i");
+    const data = await dbTools.getData(
+      { lookupName: { $regex: regexString } },
+      collectionName
+    );
+    res.status(200).json({ ...data });
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
 });
 
 // Add a student
@@ -51,8 +55,7 @@ router.post("/add-student", async (req, res, next) => {
 
 function ratingsCheckOK(
   communication,
-  participation
-,
+  participation,
   qualityOfWork,
   teamWork,
   punctual,
@@ -65,14 +68,10 @@ function ratingsCheckOK(
     communication === null ||
     isNaN(communication) ||
     participation < 0 ||
-    participation
- > 5 ||
-    participation
- === undefined ||
-    participation
- === null ||
-    isNaN(participation
-) ||
+    participation > 5 ||
+    participation === undefined ||
+    participation === null ||
+    isNaN(participation) ||
     qualityOfWork < 0 ||
     qualityOfWork > 5 ||
     qualityOfWork === undefined ||
@@ -110,23 +109,27 @@ router.get("/add-rating", async (req, res, next) => {
     owner,
     student,
     communication,
-    participation
-,
+    participation,
     qualityOfWork,
     teamWork,
     punctual,
     attitude,
   } = req.query;
 
-  if(owner === undefined || owner === null || owner === "" || owner === "undefined" || owner === "null"){    
+  if (
+    owner === undefined ||
+    owner === null ||
+    owner === "" ||
+    owner === "undefined" ||
+    owner === "null"
+  ) {
     return res.status(400).json({ error: true, message: "Please login." });
   }
 
   if (
-    !ratingsCheckOK(      
+    !ratingsCheckOK(
       communication,
-      participation
-,
+      participation,
       qualityOfWork,
       teamWork,
       punctual,
@@ -160,8 +163,7 @@ router.get("/add-rating", async (req, res, next) => {
             owner,
             student,
             communication,
-            participation
-,
+            participation,
             qualityOfWork,
             teamWork,
             punctual,
@@ -227,8 +229,7 @@ router.get("/update-rating", async (req, res, next) => {
     owner,
     student,
     communication,
-    participation
-,
+    participation,
     qualityOfWork,
     teamWork,
     punctual,
@@ -239,8 +240,7 @@ router.get("/update-rating", async (req, res, next) => {
   if (
     !ratingsCheckOK(
       communication,
-      participation
-,
+      participation,
       qualityOfWork,
       teamWork,
       punctual,
@@ -269,18 +269,16 @@ router.get("/update-rating", async (req, res, next) => {
     } else {
       dbTools.updateArray(
         { lookupName: student },
-        {          
-            owner,
-            student,
-            communication,
-            participation
-,
-            qualityOfWork,
-            teamWork,
-            punctual,
-            attitude,
-          }
-        ,        
+        {
+          owner,
+          student,
+          communication,
+          participation,
+          qualityOfWork,
+          teamWork,
+          punctual,
+          attitude,
+        },
         collectionName
       );
 
