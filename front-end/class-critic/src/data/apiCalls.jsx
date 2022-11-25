@@ -1,11 +1,11 @@
 import axios from "axios";
 import { inputCleanUp } from "../functions/inputCleanup"
 
-// const PORT = "80";
-// const HOST = "127.0.0.1";
-// const URL = `http://${HOST}:${PORT}`;
-const PORT = "";
-const URL = "" + PORT;
+const PORT = "3000";
+const HOST = "127.0.0.1";
+const URL = `http://${HOST}:${PORT}`;
+// const PORT = "";
+// const URL = "" + PORT;
 
 axios.defaults.headers.common = {
   Authorization: `bearer ${localStorage.getItem("token")}`,

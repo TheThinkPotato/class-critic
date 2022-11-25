@@ -161,7 +161,7 @@ router.get("/add-rating", async (req, res, next) => {
         {
           ratings: {
             owner,
-            student,
+            // student,
             communication,
             participation,
             qualityOfWork,
@@ -174,8 +174,8 @@ router.get("/add-rating", async (req, res, next) => {
       );
 
       // Update the student's overall ratings
-      const ratings = await getDbRating(student);
-      delete ratings.student;
+      const ratings = await getDbRating(student)      
+      // delete ratings.student;
 
       dbTools.updateData(
         { lookupName: student },
