@@ -13,7 +13,7 @@ require('dotenv').config();
 const FRONT_END_LOCATION = "../front-end/class-critic/build"
 
 const hostname = process.env.HOST_NAME || "127.0.0.1";
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 80;
 
 app.use(express.static(FRONT_END_LOCATION));
 
