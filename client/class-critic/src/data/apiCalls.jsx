@@ -1,9 +1,10 @@
 import axios from "axios";
 import { inputCleanUp } from "../functions/inputCleanup"
 
-const PORT = "3000";
-const HOST = "127.0.0.1";
-const URL = `http://${HOST}:${PORT}`;
+const clientPort = process.env.CLIENT_HOST_NAME || "3000";
+const clientHost = process.env.CLIENT_PORT || "127.0.0.1";
+const clientProtocol = process.env.CLIENT_PROTOCOL || "http";
+const URL = `${clientProtocol}://${clientHost}:${clientPort}`;
 // const PORT = "";
 // const URL = "" + PORT;
 
