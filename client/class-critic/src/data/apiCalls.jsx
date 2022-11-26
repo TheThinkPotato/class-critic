@@ -5,8 +5,9 @@ import { inputCleanUp } from "../functions/inputCleanup"
 // const clientHost = process.env.REACT_APP_CLIENT_HOST_NAME || "127.0.0.1";
 // const clientProtocol = process.env.REACT_APP_CLIENT_PROTOCOL || "http";
 // const URL = `${clientProtocol}://${clientHost}:${clientPort}`;
-const PORT = "";
-const URL = "" + PORT;
+  const URL = "http://localhost:3000";
+// const PORT = "";
+// const URL = "" + PORT;
 
 axios.defaults.headers.common = {
   Authorization: `bearer ${localStorage.getItem("token")}`,
@@ -132,14 +133,13 @@ export async function register(fName, lName, email, password) {
 
 //update user details
 export async function updateUser(fName, lName, email, password) {
-  const options = {
+  const options = {    
     path: `/user/${email}/profile`,
   };
 
   const url = `${URL}${options.path}`;
   try {
-    const response = await axios.put(url, {
-      // headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    const response = await axios.put(url, {      
       fName: fName,
       lName: lName,
       email: email,
@@ -175,14 +175,20 @@ export async function addStudent(
   uni,
   major,
   ){
-  const options = {
+  
+
+  
+    const options = {    
     path: "/student/add-student",
   };
 
   const url = `${URL}${options.path}`;
 
   try {
+
+
     const response = await axios.post(url, {
+
       fName: fName,
       lName: lName,
       gender: gender,
@@ -213,12 +219,12 @@ export async function addStudent(
 
 // add a student rating
 export async function addRating(student,communication,participation,qualityOfWork,teamWork,punctual,attitude,owner) {
-  const options = {
+  const options = {    
     path: "/student/add-rating",
     query: "?student=",
   };
 
-  const APIheader = {};
+  const APIheader = {Authorization: `bearer ${localStorage.getItem("token")}`,};
   const APIparams = {};
 
   const url = `${URL}${options.path}${options.query}${student}&communication=${communication}&participation=${participation}&qualityOfWork=${qualityOfWork}&teamWork=${teamWork}&punctual=${punctual}&attitude=${attitude}&owner=${owner}`;
@@ -252,18 +258,19 @@ export async function addRating(student,communication,participation,qualityOfWor
 
 // update student rating
 export async function updateRating(student,communication,participation,qualityOfWork,teamWork,punctual,attitude,owner,index) {
+  console.log("Authorization:-", `bearer ${localStorage.getItem("token")}`);
   const options = {
     path: "/student/update-rating",
     query: "?student=",
   };
 
-  const APIheader = {};
+  const APIheader = {Authorization: `bearer ${localStorage.getItem("token")}`,};
   const APIparams = {};
 
   const url = `${URL}${options.path}${options.query}${student}&communication=${communication}&participation=${participation}&qualityOfWork=${qualityOfWork}&teamWork=${teamWork}&punctual=${punctual}&attitude=${attitude}&owner=${owner}&&owner=${index}`;
 
   try {
-    const response = await axios.get(url, {
+    const response = await axios.get(url, {      
       headers: APIheader,
       params: APIparams,
       timeout: 20000,
