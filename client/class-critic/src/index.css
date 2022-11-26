@@ -10,16 +10,16 @@ html {
 
 .fade-in {
   
-  animation: fadeIn ease 2s;
-  -webkit-animation: fadeIn ease 2s;
-  -moz-animation: fadeIn ease 2s;
-  -o-animation: fadeIn ease 2s;
-  -ms-animation: fadeIn ease 2s;
+  animation: fadeIn ease 9s;
+  -webkit-animation: fadeIn ease 9s;
+  -moz-animation: fadeIn ease 9s;
+  -o-animation: fadeIn ease 9s;
+  -ms-animation: fadeIn ease 9s;
 }
 
 @keyframes fadeIn {
   0% { opacity: 0; }
-  20% { opacity: 0; }
+  80% { opacity: 0; }
   100% { opacity: 1; }
 }
 

@@ -14,8 +14,7 @@ axios.defaults.headers.common = {
 
 
 // search for students
-export async function search(query) {
-  console.log(URL)
+export async function search(query) {  
   const options = {
     path: "/student/search",
     query: "?search=",
