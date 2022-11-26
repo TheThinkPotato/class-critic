@@ -1,12 +1,12 @@
 import axios from "axios";
 import { inputCleanUp } from "../functions/inputCleanup"
 
-const clientPort = process.env.REACT_APP_CLIENT_PORT || "3000";
-const clientHost = process.env.REACT_APP_CLIENT_HOST_NAME || "127.0.0.1";
-const clientProtocol = process.env.REACT_APP_CLIENT_PROTOCOL || "http";
-const URL = `${clientProtocol}://${clientHost}:${clientPort}`;
-// const PORT = "";
-// const URL = "" + PORT;
+// const clientPort = process.env.REACT_APP_CLIENT_PORT || "3000";
+// const clientHost = process.env.REACT_APP_CLIENT_HOST_NAME || "127.0.0.1";
+// const clientProtocol = process.env.REACT_APP_CLIENT_PROTOCOL || "http";
+// const URL = `${clientProtocol}://${clientHost}:${clientPort}`;
+const PORT = "";
+const URL = "" + PORT;
 
 axios.defaults.headers.common = {
   Authorization: `bearer ${localStorage.getItem("token")}`,
