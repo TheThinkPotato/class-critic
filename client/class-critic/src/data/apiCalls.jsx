@@ -11,9 +11,9 @@ import { inputCleanUp } from "../functions/inputCleanup"
 const PORT = "";
 const URL = "" + PORT;
 
-axios.defaults.headers.common = {
-  Authorization: `bearer ${localStorage.getItem("token")}`,
-};
+// axios.defaults.headers.common = {
+//   Authorization: `bearer ${localStorage.getItem("token")}`,
+// };
 
 
 // search for students
@@ -139,6 +139,8 @@ export async function updateUser(fName, lName, email, password) {
     path: `/user/${email}/profile`,
   };
 
+  const APIheader = {Authorization: `bearer ${localStorage.getItem("token")}`,};
+  
   const url = `${URL}${options.path}`;
   try {
     const response = await axios.put(url, {      
@@ -147,7 +149,7 @@ export async function updateUser(fName, lName, email, password) {
       email: email,
       password: password,
       timeout: 20000,
-    });
+    }, {headers: APIheader});
 
     if (response.status !== 200) {
       console.log("error:", response.status);
@@ -184,19 +186,25 @@ export async function addStudent(
     path: "/student/add-student",
   };
 
+  
+  
   const url = `${URL}${options.path}`;
 
   try {
 
-
-    const response = await axios.post(url, {
-
+    const APIheader = {Authorization: `bearer ${localStorage.getItem("token")}`};
+    
+  
+    const response = await axios.post(url, {    
+      timeout: 20000,
       fName: fName,
       lName: lName,
       gender: gender,
       uni: uni,
-      major: major,
-      timeout: 20000,
+      major: major,      
+    },
+    {
+      headers: APIheader,      
     });
 
     if (response.status !== 200) {

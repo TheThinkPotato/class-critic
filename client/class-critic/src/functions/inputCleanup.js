@@ -46,4 +46,10 @@ function swearCheckOk(input) {
   return !naughtyWords.includes(input);
 }
 
-export { inputCleanUp, inputCheckOk, swearCheckOk };
+// Capitalizes the first letter of input
+function capitalizer(input)
+{  
+  return input.charAt(0).toUpperCase() + input.slice(1)  
+}
+
+export { inputCleanUp, inputCheckOk, swearCheckOk, capitalizer };

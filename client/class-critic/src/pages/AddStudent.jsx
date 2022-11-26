@@ -4,7 +4,7 @@ import DropDown from "../components/DropDown";
 import { getUnis, addStudent } from "../data/apiCalls";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { inputCheckOk, swearCheckOk } from "../functions/inputCleanup";
+import { capitalizer, inputCheckOk, swearCheckOk } from "../functions/inputCleanup";
 import Loader from "../components/Loader";
 
 export default function AddStudent() {
@@ -15,7 +15,7 @@ export default function AddStudent() {
   const [uniOptions, setUniOptions] = useState(["Select a College"]);
   const [fName, setfName] = useState("");
   const [lName, setlName] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState("Male");
   const [uni, setUni] = useState("");
   const [major, setMajor] = useState("");
 
@@ -45,7 +45,9 @@ export default function AddStudent() {
               type={"text"}
               name="fName"
               value={fName}
-              onChange={(e) => setfName(e.target.value)}
+              onChange={(e) =>                 
+                setfName(capitalizer(e.target.value))
+              }
             />
           </div>
           <div className="mb-4 mt-4 w-full md:w-3/4 m-auto">
@@ -56,7 +58,7 @@ export default function AddStudent() {
               type={"text"}
               name="lName"
               value={lName}
-              onChange={(e) => setlName(e.target.value)}
+              onChange={(e) => setlName(capitalizer(e.target.value))}
             />
           </div>
           <div className="mb-4 mt-4 w-full md:w-3/4 m-auto">
@@ -88,7 +90,7 @@ export default function AddStudent() {
               type={"text"}
               name="major"
               value={major}
-              onChange={(e) => setMajor(e.target.value)}
+              onChange={(e) => setMajor(capitalizer(e.target.value))}
             />
           </div>
         </div>
