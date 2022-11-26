@@ -76,7 +76,8 @@ export async function login(email, password) {
         status: response.status,
         message: response.message,
       };
-    } else {
+    } else {      
+      localStorage.clear();
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("fName", response.data.fName);
       localStorage.setItem("lName", response.data.lName);
