@@ -31,7 +31,7 @@ export default function Login() {
             <div className="mb-4 mt-4 w-full md:w-3/4 m-auto">
               <h2 className="text-left font-semibold">First Name:</h2>
               <input
-                className="bg-gray-200 border-2 border-black rounded-md w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                className="bg-gray-200 border-2 border-black rounded-md w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
                 placeholder="First Name"
                 type={"text"}
                 name="fName"
@@ -42,7 +42,7 @@ export default function Login() {
             <div className="mb-4 mt-4 w-full md:w-3/4 m-auto">
               <h2 className="text-left font-semibold">Last Name:</h2>
               <input
-                className="bg-gray-200 border-2 border-black rounded-md w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                className="bg-gray-200 border-2 border-black rounded-md w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
                 placeholder="Last Name"
                 type={"text"}
                 name="lName"
@@ -53,7 +53,7 @@ export default function Login() {
             <div className="mb-4 mt-4 w-full md:w-3/4 m-auto">
               <h2 className="text-left font-semibold">Email:</h2>
               <input
-                className="bg-gray-200 border-2 border-black rounded-md w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                className="bg-gray-200 border-2 border-black rounded-md w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
                 placeholder="Email"
                 type={"text"}
                 name="email"
@@ -64,7 +64,7 @@ export default function Login() {
             <div className="mb-4 mt-4 w-full md:w-3/4 m-auto">
               <h2 className="text-left font-semibold">New Password:</h2>
               <input
-                className="bg-gray-200 border-2 border-black rounded-md w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
+                className="bg-gray-200 border-2 border-black rounded-md w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
                 placeholder="New Password"
                 type={"text"}
                 name="password"

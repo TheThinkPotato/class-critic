@@ -156,7 +156,7 @@ router.get("/add-rating", async (req, res, next) => {
         .status(400)
         .json({ error: true, message: "You have already rated this student." });
     } else {
-      dbTools.appendArray(
+      await dbTools.appendArray(
         { lookupName: student },
         {
           ratings: {
@@ -210,6 +210,7 @@ router.get("/get-rating", async (req, res, next) => {
 // Get all ratings from a student
 async function getDbRating(student) {
   const data = await dbTools.getScores({ lookupName: student }, collectionName);
+  
   if (data.length !== 0) {
     const result = classCritic.calculateScores(data);
     return result;
@@ -267,7 +268,7 @@ router.get("/update-rating", async (req, res, next) => {
         .status(400)
         .json({ error: true, message: "You have no rating to update." });
     } else {
-      dbTools.updateArray(
+      const result = await dbTools.updateArray(
         { lookupName: student },
         {
           owner,
@@ -282,8 +283,12 @@ router.get("/update-rating", async (req, res, next) => {
         collectionName
       );
 
+        
+        // wait 2 seconds for the update to take place
+        // await new Promise((resolve) => setTimeout(resolve, 5000));               
+
       // Update the student's overall ratings
-      const ratings = await getDbRating(student);
+      const ratings = await getDbRating(student);      
       delete ratings.student;
 
       dbTools.updateData(

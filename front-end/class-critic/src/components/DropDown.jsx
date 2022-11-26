@@ -21,7 +21,7 @@ const DropDown = (props) => {
             borderWidth: 2,
             backgroundColor: state.isFocused ? "white" :"#f5f5f5",
             "&:hover": {
-                borderColor: state.isFocused ? "grey" : "#a855f7",
+                borderColor: state.isFocused ? "grey" : "#3b82f6",
                 borderWidth: 2,
                 backgroundColor: state.isFocused ? "white" :"#f5f5f5",
             }
