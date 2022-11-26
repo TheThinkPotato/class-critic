@@ -31,7 +31,7 @@ function Home() {
           </div>
         ) 
         : (
-          <div className="text-black bg-gray-50 w-1/2 border-gray-300 border-4 self-center rounded-lg fad-in">
+          <div className="text-black bg-gray-50 w-1/2 border-gray-300 border-4 self-center rounded-lg fade-in">
             <h1 className=" bg-orange-500 text-white text-center font-bold text-2xl mb-4 border-b-2 border-orange-700 p-2">Loading</h1>
             <div className="text-left mx-auto mx-8 mb-4 font-semibold">
             <p>Data is still loading or has not been found.</p>

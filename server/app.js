@@ -10,7 +10,8 @@ const res = require("express/lib/response");
 const helmet = require('helmet')
 require('dotenv').config();
 
-const FRONT_END_LOCATION = "../front-end/class-critic/build"
+// const FRONT_END_LOCATION = "../front-end/class-critic/build"
+const FRONT_END_LOCATION = "./"
 
 const hostname = process.env.HOST_NAME || "127.0.0.1";
 const port = process.env.PORT || 3000;
